@@ -84,6 +84,6 @@ y_pred = np.squeeze(model.predict(X_test))
 test_r2 = r2_score(Y_test, y_pred)
 print("Test R^2 Score: {:.5f}".format(test_r2))
 
-import pickle
-pickle.dump(model, open('model.pkl', 'wb'))
-
+import tensorflow
+model_version = "test"
+model.save(f"./saved_models/{model_version}")

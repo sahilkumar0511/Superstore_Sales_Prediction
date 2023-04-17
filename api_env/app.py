@@ -1,84 +1,48 @@
+from flask import Flask, jsonify, request, render_template
+import tensorflow as tf
 import numpy as np
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
 import pickle
-import tensorflow as tf
-import os
-import h5py
 
 app = Flask(__name__)
-with open('model_pkl','rb') as f:
-    mp = pickle.load(f)
-
-# path = os.path.dirname(__file__)
-# print(path)
-# MODEL = tf.keras.models.load_model(path + "\\test")
 
 
+# Load the machine learning model
+model = tf.keras.models.load_model('model.h5')
 
-# train = pd.read_csv('train.csv')
-
-# train.drop(['User_ID', 'Product_ID', 'Gender', 'City_Category', 
-#             'Marital_Status', 'Product_Category_3'], axis = 1, inplace = True)
-    
-# train['Product_Category_2'].fillna(train['Product_Category_2'].median(), inplace = True)
-
-# train['Product_Category_2'] = train['Product_Category_2'].astype('int')
-
-# train['Stay_In_Current_City_Years'] = train['Stay_In_Current_City_Years'].apply(lambda x : str(x).replace('4+', '4'))
-
-# train['Stay_In_Current_City_Years'] = train['Stay_In_Current_City_Years'].astype('int')
-
-# train['Age'] = train['Age'].map(
-#                             {'0-17' : 1,
-#                              '18-25' : 2,
-#                              '26-35' : 3,
-#                              '36-45' : 4,
-#                              '46-50' : 5,
-#                              '51-55' : 6,
-#                              '55+' : 7
-#                              })
-
-# X = train.drop('Purchase', axis = 1)
-# Y = train['Purchase']
-
-# from sklearn.preprocessing import StandardScaler
-# scaler = StandardScaler()
-
-# X = scaler.fit_transform(X)
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# Define a route to handle incoming requests
 
-@app.route('/ping')
-def ping():
-    return "Server is alive"
 
-@app.route('/predict',methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
+    Profit = request.form['Profit']
+    Quantity = (request.form['Quantity'])
+    Category_Furniture = (request.form['Category_Furniture'])
+    Category_Office_Supplies = (request.form['Category_Office_Supplies'])
+    Category_Technology = (request.form['Category_Technology'])
     
-    if request.method == 'POST':
-        Category = request.form['Category']
-        Discount = request.form['Discount']
-        Profit = request.form['Profit']
-        # Region = request.form['Region']
-        # Category = request.form['Category']
+    # features = [Profit, Quantity, Category_Furniture,
+    #             Category_Office_Supplies, Category_Technology]
+    # # int_features = [int(x) for x in features]
+    # # final_features = [np.array(int_features)]
+    # prediction = model.predict(features)
+    # Profit = request.args.get('Profit')
+    # Quantity = request.args.get('Quantity')
+    # Category_Furniture = request.args.get('Category_Furniture')
+    # Category_Office_Supplies = request.args.get('Category_Office_Supplies')
+    # Category_Technology = request.args.get('Category_Technology')
     
-    features = [Category,Discount,Profit]
-        
-    # int_features = [int(x) for x in features]
-    final_features = [np.array(features)]
-    prediction = mp.predict(final_features)
+    features = [Profit, Quantity, Category_Furniture, Category_Office_Supplies, Category_Technology]
+    int_features = [float(x) for x in features]
+    prediction = model.predict(np.array(int_features))
 
-    return render_template('index.html', prediction_text='Sales: {}$'.format(round(prediction[0]) ))
+    return render_template('index.html', prediction_text='Sales: {}$'.format(round(prediction[0])))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-
-
