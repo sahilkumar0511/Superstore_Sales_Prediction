@@ -35,7 +35,7 @@ def predict():
     # return ""
     prediction=prediction[0][0]
     # return ''
-    return render_template('index.html', prediction_text="The predicted sales value is %.2f"%prediction)
+    return render_template('index.html', prediction_text="SALES VALUE IS: %.3f"%prediction)
  except Exception as e:
     print(e)
     print(Profit, Quantity, Category)
